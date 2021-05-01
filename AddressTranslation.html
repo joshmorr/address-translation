@@ -23,6 +23,9 @@
     .option-label {
       margin-right: 20px;
     }
+    #options-label {
+      margin-right: 20px;
+    }
     #l-memory-box {
       margin-left: 20px;
     }
@@ -32,6 +35,10 @@
     table {
       table-layout: fixed;
     }
+    #button-panel {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -40,12 +47,20 @@
       <h1>Address Translation</h1>
       <div v-if="temp">{{option}}</div>
       <div id="options">
+        <b id="options-label">Select Method:</b>
         <input class="option" type="radio" id="paging" value="paging" v-model="option">
         <label class="option-label" for="male">Paging</label><br>
         <input class="option" type="radio" id="segmentation" value="segmentation" v-model="option">
         <label class="option-label" for="segmentation">Segmentation</label><br>
       </div>
-      <p>Offset = 1000</p>
+      <div id="button-panel">
+        <button type="button" class="btn btn-primary">Generate INPUT(data)</button>
+        <button type="button" class="btn btn-primary">&lt&lt START</button>
+        <button type="button" class="btn btn-primary">NEXT STEP</button>
+        <button type="button" class="btn btn-primary">PLAY</button>
+        <button type="button" class="btn btn-primary">PAUSE</button>
+        <button type="button" class="btn btn-primary">&gt&gt END</button>
+      </div>
     </div>
     <div v-if="pagingIsSelected">
       <div class="container"></div>

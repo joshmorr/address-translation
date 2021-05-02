@@ -26,11 +26,11 @@
     #options-label {
       margin-right: 20px;
     }
-    #l-memory-box {
-      margin-left: 20px;
-    }
-    #p-memory-box {
-      margin-right: 20px;
+    #arrow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
     }
     table {
       table-layout: fixed;
@@ -38,6 +38,15 @@
     #button-panel {
       margin-top: 20px;
       margin-bottom: 20px;
+    }
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    .content {
+      margin-left: 20px;
+      margin-right: 20px;
     }
   </style>
 </head>
@@ -62,23 +71,65 @@
         <button type="button" class="btn btn-primary">&gt&gt END</button>
       </div>
     </div>
-    <div v-if="pagingIsSelected">
+    <div v-if="pagingIsSelected" class="content">
       <div class="container"></div>
         <div class="row">
-          <div class="col" id="l-memory-box">
-            <h3>Logical Memory</h3>
-            <table id="l-memory-table" class="table table-bordered">
-              <thead>
-                <th>Page Number</th>
-                <th>Data</th>
-              </thead>
-              <tbody>
-                <tr v-for="entry in pagingLogicalMemory" v-on:click="rowClickedPaging(entry.pageNum)" style="cursor: pointer">
-                  <td>{{entry.pageNum}}</td>
-                  <td>{{entry.data}}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="col">
+            <p id="l-memory-label">Logical Address:</p>
+          </div>
+          <div class="col"></div>
+          <div class="col">
+            <p id="p-memory-label">Physical Address:</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="input-group">
+              <div class="input-field">
+                <b>Page #</b>
+                <input>
+              </div>
+              <div class="input-field">
+                <b>Offset</b>
+                <input>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div id="arrow">
+              <h1>------></h1>
+            </div>
+          </div>
+          <div class="col">
+            <div class="input-group">
+              <div class="input-field">
+                <b>Frame #</b>
+                <input>
+              </div>
+              <div class="input-field">
+                <b>Offset</b>
+                <input>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div id="l-memory-box">
+              <h3>Logical Memory</h3>
+              <table id="l-memory-table" class="table table-bordered">
+                <thead>
+                  <th>Page Number</th>
+                  <th>Data</th>
+                </thead>
+                <tbody>
+                  <tr v-for="entry in pagingLogicalMemory" v-on:click="rowClickedPaging(entry.pageNum)" style="cursor: pointer">
+                    <td>{{entry.pageNum}}</td>
+                    <td>{{entry.data}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
           <div class="col">
             <h3>Page Table</h3>
@@ -95,21 +146,23 @@
               </tbody>
             </table>
           </div>
-          <div id="p-memory-box" class="col">
-            <table id="p-memory-table" class="table table-bordered">
-            <h3>Physical Memory</h3>
-            <thead>
-              <th>Frame Number</th>
-              <th>Address</th>
-              <th>Data</th>
-            </thead>
-            <tbody>
-              <tr v-for="entry in pagingPhysicalMemory">
-                <td>{{entry.frameNum}}</td>
-                <td>{{entry.address}}</td>
-                <td>{{entry.data}}</td>
-              </tr>
-            </tbody>
+          <div class="col">
+            <div id="p-memory-box">
+              <table id="p-memory-table" class="table table-bordered">
+                <h3>Physical Memory</h3>
+                <thead>
+                  <th>Frame Number</th>
+                  <th>Address</th>
+                  <th>Data</th>
+                </thead>
+                <tbody>
+                  <tr v-for="entry in pagingPhysicalMemory">
+                    <td>{{entry.frameNum}}</td>
+                    <td>{{entry.address}}</td>
+                    <td>{{entry.data}}</td>
+                  </tr>
+                </tbody>             
+              </div>
           </div>
         </div>
       </div>

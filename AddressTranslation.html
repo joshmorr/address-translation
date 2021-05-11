@@ -54,7 +54,6 @@
   <div id="app">
     <div class="main">
       <h1>Address Translation</h1>
-      <div v-if="temp">{{option}}</div>
       <div id="options">
         <b id="options-label">Select Method:</b>
         <input class="option" type="radio" id="paging" value="paging" v-model="option">
@@ -63,12 +62,12 @@
         <label class="option-label" for="segmentation">Segmentation</label><br>
       </div>
       <div id="button-panel">
-        <button type="button" class="btn btn-primary">Generate INPUT(data)</button>
-        <button type="button" class="btn btn-primary">&lt&lt START</button>
-        <button type="button" class="btn btn-primary">NEXT STEP</button>
+        <button type="button" class="btn btn-primary" v-on:click="generateInputClicked">Generate INPUT(data)</button>
+        <button type="button" class="btn btn-primary" v-on:click="startClicked">&lt&lt START</button>
+        <button type="button" class="btn btn-primary" v-on:click="nextStepClicked">NEXT STEP</button>
         <button type="button" class="btn btn-primary">PLAY</button>
         <button type="button" class="btn btn-primary">PAUSE</button>
-        <button type="button" class="btn btn-primary">&gt&gt END</button>
+        <button type="button" class="btn btn-primary" v-on:click="endClicked">&gt&gt END</button>
       </div>
     </div>
     <div v-if="pagingIsSelected" class="content">
@@ -87,11 +86,11 @@
             <div class="input-group">
               <div class="input-field">
                 <b>Page #</b>
-                <input>
+                <input disabled id="page-num-input" v-model="pageNumInput">
               </div>
               <div class="input-field">
                 <b>Offset</b>
-                <input>
+                <input disabled v-model="offsetInput">
               </div>
             </div>
           </div>
@@ -104,11 +103,11 @@
             <div class="input-group">
               <div class="input-field">
                 <b>Frame #</b>
-                <input>
+                <input disabled id="frame-num-output" v-model="frameNumOutput">
               </div>
               <div class="input-field">
                 <b>Offset</b>
-                <input>
+                <input disabled v-model="offsetInput">
               </div>
             </div>
           </div>
@@ -123,7 +122,7 @@
                   <th>Data</th>
                 </thead>
                 <tbody>
-                  <tr v-for="entry in pagingLogicalMemory" v-on:click="rowClickedPaging(entry.pageNum)" style="cursor: pointer">
+                  <tr v-for="entry in pagingLogicalMemory" style="cursor: pointer">
                     <td>{{entry.pageNum}}</td>
                     <td>{{entry.data}}</td>
                   </tr>
@@ -174,7 +173,10 @@
       data: {
         temp: false,
         option: "paging",
-        offset: 1000,
+        step: 0,
+        pageNumInput: "1",
+        offsetInput: "1000",
+        frameNumOutput: "",
         pagingLogicalMemory: [
           {
             selected: true,
@@ -347,9 +349,28 @@
         }
       },
       methods: {
-        rowClickedPaging: function(pageNum) {
-          const frameNum = this.pageTable[pageNum].frameNum;
+        clearRows: function() {
+          const lMemoryTable = document.getElementById("l-memory-table");
+          const pageTable = document.getElementById("page-table");
+          const pMemoryTable = document.getElementById("p-memory-table")
 
+          for (let row of lMemoryTable.rows) {
+            row.style.backgroundColor = "white";
+          }
+
+          for (let row of pageTable.rows) {
+            row.style.backgroundColor = "white";
+          }
+
+          for (let row of pMemoryTable.rows) {
+            row.style.backgroundColor = "white";
+          }
+        },
+        rowClicked: function(pageNum) {
+          if (this.option === paging) {
+            const frameNum = this.pageTable[pageNum].frameNum;
+          }
+          
           const lMemoryTable = document.getElementById("l-memory-table");
           const pageTable = document.getElementById("page-table");
           const pMemoryTable = document.getElementById("p-memory-table")
@@ -371,10 +392,91 @@
 
           
           for (let row of pMemoryTable.rows) {
-            console.log(row);
             if (row.childNodes[0].innerHTML == frameNum) {
               row.style.backgroundColor = "yellow";
             } 
+          }
+        },
+        generateInputClicked: function() {
+          this.pageNumInput = Math.floor(Math.random() * 4)  + 1;
+        },
+        startClicked: function() {
+          const frameNumOutput = document.getElementById("frame-num-output");
+
+          this.clearRows();
+          this.frameNumOutput = "";
+          this.step = 0;
+          frameNumOutput.style.backgroundColor = "white"
+        },
+        nextStepClicked: function() {
+          if (this.option === "paging") {
+            const pageNum = parseInt(this.pageNumInput, 10);
+            const frameNum = this.pageTable[pageNum].frameNum;
+            const lMemoryTable = document.getElementById("l-memory-table");
+            const pageTable = document.getElementById("page-table");
+            const pMemoryTable = document.getElementById("p-memory-table");
+            const pageNumInput = document.getElementById("page-num-input")
+            const frameNumOutput = document.getElementById("frame-num-output")
+            
+            if (this.step === 0) {
+              this.clearRows();
+              frameNumOutput.style.backgroundColor = "white"
+              pageNumInput.style.backgroundColor = "yellow";
+              this.step = 1
+            } else if (this.step === 1) {
+              pageNumInput.style.backgroundColor = "white"
+              lMemoryTable.rows[pageNum + 1].style.backgroundColor = "yellow";
+              this.step = 2;
+            } else if (this.step === 2) {
+              lMemoryTable.rows[pageNum + 1].style.backgroundColor = "white";
+              pageTable.rows[pageNum + 1].style.backgroundColor = "yellow";
+              this.step = 3;
+            } else if (this.step === 3) {
+              pageTable.rows[pageNum + 1].style.backgroundColor = "white";
+              for (let row of pMemoryTable.rows) {
+                if (row.childNodes[0].innerHTML == frameNum) {
+                  row.style.backgroundColor = "yellow";
+                }
+              }
+              this.step = 4;
+            } else if (this.step === 4) {
+              this.clearRows();
+              frameNumOutput.style.backgroundColor = "yellow";
+              this.frameNumOutput = frameNum;
+            }
+          }
+        },
+        endClicked: function() {
+          if (this.option === "paging") {
+            const pageNum = parseInt(this.pageNumInput, 10);
+            const frameNum = this.pageTable[pageNum].frameNum;
+            const lMemoryTable = document.getElementById("l-memory-table");
+            const pageTable = document.getElementById("page-table");
+            const pMemoryTable = document.getElementById("p-memory-table");
+
+            this.frameNumOutput = frameNum;
+
+            for (let row of lMemoryTable.rows) {
+              row.style.backgroundColor = "white";
+            }
+
+            for (let row of pageTable.rows) {
+              row.style.backgroundColor = "white";
+            }
+
+            for (let row of pMemoryTable.rows) {
+              row.style.backgroundColor = "white";
+            }
+
+            lMemoryTable.rows[pageNum + 1].style.backgroundColor = "yellow";
+            pageTable.rows[pageNum + 1].style.backgroundColor = "yellow";
+
+            for (let row of pMemoryTable.rows) {
+              console.log(row);
+              if (row.childNodes[0].innerHTML == frameNum) {
+                row.style.backgroundColor = "yellow";
+              } 
+            }
           }
         }
       },
@@ -385,7 +487,6 @@
         currentNum = 1
         for (let x = 1; x < rows.length; x++) {
             if (rows[x].childNodes[0].innerHTML != currentNum) {
-              console.log(rows[x])
               rows[x].style.borderTop = "double";
               currentNum = rows[x].childNodes[0].innerHTML;
             } 

@@ -687,6 +687,7 @@
           }
         },
         startClicked: function() {
+          clearInterval(this.interval);
           this.clearRows();
           this.frameNumOutput = "";
           this.step = 0;

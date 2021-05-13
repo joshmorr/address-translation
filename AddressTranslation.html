@@ -66,8 +66,8 @@
         <button v-else disabled type="button" class="btn btn-primary">Generate INPUT(data)</button>
         <button type="button" class="btn btn-primary" v-on:click="startClicked">&lt&lt START</button>
         <button type="button" class="btn btn-primary" v-on:click="nextStepClicked">NEXT STEP</button>
-        <button type="button" class="btn btn-primary">PLAY</button>
-        <button type="button" class="btn btn-primary">PAUSE</button>
+        <button type="button" class="btn btn-primary" v-on:click="playClicked">PLAY</button>
+        <button type="button" class="btn btn-primary" v-on:click="pauseClicked">PAUSE</button>
         <button type="button" class="btn btn-primary" v-on:click="endClicked">&gt&gt END</button>
       </div>
     </div>
@@ -247,6 +247,7 @@
         frameNumOutput: "",
         base: "",
         limit: "",
+        interval: null,
         pagingLogicalMemory: [
           {
             selected: true,
@@ -684,7 +685,6 @@
           } else {
             this.segmentNumInput = Math.floor(Math.random() * 4);
           }
-          
         },
         startClicked: function() {
           this.clearRows();
@@ -775,7 +775,14 @@
             }
           }
         },
+        playClicked: function() {
+          this.interval = setInterval(this.nextStepClicked, 1000)
+        },
+        pauseClicked: function() {
+          clearInterval(this.interval);
+        },
         endClicked: function() {
+          clearInterval(this.interval);
           if (this.option === "paging") {
             const pageNum = parseInt(this.pageNumInput, 10);
             const frameNum = this.pageTable[pageNum].frameNum;

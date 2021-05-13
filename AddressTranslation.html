@@ -547,6 +547,7 @@
       },
       watch: {
         option: function(newOption, oldOption) {
+          clearInterval(this.interval);
           this.step = 0;
           this.pageNumInput = "1";
           this.segmentNumInput = "1";
@@ -777,7 +778,7 @@
           }
         },
         playClicked: function() {
-          this.interval = setInterval(this.nextStepClicked, 1000)
+          this.interval = setInterval(this.nextStepClicked, 1000);
         },
         pauseClicked: function() {
           clearInterval(this.interval);

@@ -90,7 +90,7 @@
               <input v-if="pagingIsSelected" disabled id="page-num-input" v-model="pageNumInput">
               <input v-if="segmentationIsSelected" disabled id="segment-num-input" v-model="segmentNumInput">
             </div>
-            <div v-if="pagingIsSelected" class="input-field">
+            <div class="input-field">
               <b>Offset</b>
               <input disabled v-model="offsetInput">
             </div>
@@ -107,17 +107,13 @@
               <b>Frame #</b>
               <input disabled id="frame-num-output" v-model="frameNumOutput">
             </div>
-            <div v-if="pagingIsSelected" class="input-field">
-              <b>Offset</b>
-              <input disabled v-model="offsetInput">
-            </div>
             <div v-if="segmentationIsSelected" class="input-field">
               <b>Base</b>
               <input disabled id="base-output" v-model="base">
             </div>
-            <div v-if="segmentationIsSelected" class="input-field">
-              <b>Limit</b>
-              <input disabled id="limit-output" v-model="limit">
+            <div class="input-field">
+              <b>Offset</b>
+              <input disabled v-model="offsetInput">
             </div>
           </div>
         </div>
@@ -136,8 +132,8 @@
                 </thead>
                 <tbody>
                   <tr v-for="entry in pagingLogicalMemory">
-                    <td>{{entry.pageNum}}</td>
-                    <td>{{entry.data}}</td>
+                    <td style="background-color: rgba(51, 153, 255, .3);">{{entry.pageNum}}</td>
+                    <td style="background-color: rgba(192, 192, 192, .3)">{{entry.data}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -151,8 +147,8 @@
                 </thead>
                 <tbody>
                   <tr v-for="entry in segmentationLogicalMemory">
-                    <td>{{entry.segmentNum}}</td>
-                    <td>{{entry.data}}</td>
+                    <td style="background-color: rgba(51, 153, 255, .3);">{{entry.segmentNum}}</td>
+                    <td style="background-color: rgba(192, 192, 192, .3)">{{entry.data}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -435,22 +431,22 @@
         segmentTable: [
           {
             segmentNum: 0,
-            base: 1006,
+            base: 6,
             limit: 3
           },
           {
             segmentNum: 1,
-            base: 1017,
+            base: 17,
             limit: 5
           },
           {
             segmentNum: 2,
-            base: 1000,
+            base: 0,
             limit: 4
           },
           {
             segmentNum: 3,
-            base: 1010,
+            base: 10,
             limit: 6
           }
         ],
@@ -582,10 +578,8 @@
             const pMemoryTable = document.getElementById("p-memory-table-segmentation");
             const segmentNumInput = document.getElementById("segment-num-input");
             const baseOutput = document.getElementById("base-output");
-            const limitOutput = document.getElementById("limit-output");
 
             baseOutput.style.backgroundColor = "white";
-            limitOutput.style.backgroundColor = "white";
             segmentNumInput.style.backgroundColor = "white";
 
             for (let row of lMemoryTable.rows) {
@@ -661,10 +655,8 @@
             const pMemoryTable = document.getElementById("p-memory-table-segmentation");
             const segmentNumInput = document.getElementById("segment-num-input");
             const baseOutput = document.getElementById("base-output");
-            const limitOutput = document.getElementById("limit-output");
 
             baseOutput.style.backgroundColor = "white";
-            limitOutput.style.backgroundColor = "white";
             segmentNumInput.style.backgroundColor = "white";
 
             for (let row of lMemoryTable.rows) {
@@ -738,12 +730,10 @@
             const pMemoryTable = document.getElementById("p-memory-table-segmentation");
             const segmentNumInput = document.getElementById("segment-num-input");
             const baseOutput = document.getElementById("base-output");
-            const limitOutput = document.getElementById("limit-output");
 
             if (this.step === 0) {
               this.clearRows();
               baseOutput.style.backgroundColor = "white";
-              limitOutput.style.backgroundColor = "white";
               segmentNumInput.style.backgroundColor = "yellow";
               this.step = 1
             } else if (this.step === 1) {
@@ -758,20 +748,19 @@
               segmentTable.rows[segmentNum + 1].style.backgroundColor = "white";
               let i = 1;
               while (i < pMemoryTable.rows.length) {
-                if (pMemoryTable.rows[i].childNodes[0].innerHTML == base) {
-                  for (let j = 0; j < limit; j++) {
-                    pMemoryTable.rows[i].style.backgroundColor = "yellow";
-                    i++;
-                  }
-                } else {
+              if (pMemoryTable.rows[i].childNodes[0].innerHTML == parseInt(base, 10) + 1000) {
+                for (let j = 0; j < limit; j++) {
+                  pMemoryTable.rows[i].style.backgroundColor = "yellow";
                   i++;
                 }
+              } else {
+                i++;
               }
+            }
               this.step = 4;
             } else if (this.step === 4) {
               this.clearRows();
               baseOutput.style.backgroundColor = "yellow";
-              limitOutput.style.backgroundColor = "yellow";
               this.base = base;
               this.limit = limit;
             }
@@ -791,6 +780,7 @@
             const lMemoryTable = document.getElementById("l-memory-table");
             const pageTable = document.getElementById("page-table");
             const pMemoryTable = document.getElementById("p-memory-table");
+            const pageNumInput = document.getElementById("page-num-input");
             const frameNumOutput = document.getElementById("frame-num-output");
 
             this.frameNumOutput = frameNum;
@@ -806,7 +796,8 @@
             for (let row of pMemoryTable.rows) {
               row.style.backgroundColor = "white";
             }
-
+            
+            pageNumInput.style.backgroundColor = "yellow";
             lMemoryTable.rows[pageNum + 1].style.backgroundColor = "yellow";
             pageTable.rows[pageNum + 1].style.backgroundColor = "yellow";
 
@@ -818,13 +809,13 @@
             frameNumOutput.style.backgroundColor = "yellow";
           } else {
             const segmentNum = parseInt(this.pageNumInput, 10);
+            const segmentNumInput = document.getElementById("segment-num-input");
             const base = this.segmentTable[segmentNum].base;
             const limit = this.segmentTable[segmentNum].limit;
             const lMemoryTable = document.getElementById("l-memory-table-segmentation");
             const pageTable = document.getElementById("segmentation-table");
             const pMemoryTable = document.getElementById("p-memory-table-segmentation");
             const baseOutput = document.getElementById("base-output");
-            const limitOutput = document.getElementById("limit-output");
 
             this.base = base;
             this.limit = limit;
@@ -842,12 +833,13 @@
               row.style.backgroundColor = "white";
             }
 
+            segmentNumInput.style.backgroundColor = "yellow";
             lMemoryTable.rows[segmentNum + 1].style.backgroundColor = "yellow";
             pageTable.rows[segmentNum + 1].style.backgroundColor = "yellow";
 
             let i = 1;
             while (i < pMemoryTable.rows.length) {
-              if (pMemoryTable.rows[i].childNodes[0].innerHTML == base) {
+              if (pMemoryTable.rows[i].childNodes[0].innerHTML == parseInt(base, 10) + 1000) {
                 for (let j = 0; j < limit; j++) {
                   pMemoryTable.rows[i].style.backgroundColor = "yellow";
                   i++;
@@ -856,11 +848,18 @@
                 i++;
               }
             }
-            baseOutput.style.backgroundColor = "yellow";
-            limitOutput.style.backgroundColor = "yellow";            
+            baseOutput.style.backgroundColor = "yellow";    
           }
         }
       },
+      mounted() {
+        const lMemoryTable = document.getElementById("l-memory-table");
+        
+        for (let i = 1; i < lMemoryTable.rows.length; i++) {
+          lMemoryTable.rows[i].childNodes[0].style.backgroundColor = "rgba(51, 153, 255, .3)";
+          lMemoryTable.rows[i].childNodes[2].style.backgroundColor = "rgba(192, 192, 192, .3)";
+        }
+      }
     });
  </script>
 </body>
